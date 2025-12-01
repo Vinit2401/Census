@@ -202,7 +202,7 @@ train_node = function(obj,
   if(is.null(markers)){markers = Seurat::FindAllMarkers(obj, only.pos = T, ...)}
   if(is.integer(topn)){markers = markers %>% dplyr::group_by(cluster) %>% dplyr::top_n(topn, avg_logFC)}
 
-  x = obj@assays$RNA@counts[markers$gene, ] %>% as.matrix()
+  x = obj@assays$RNA$counts[markers$gene, ] %>% as.matrix()
   new_x = x
   y = Seurat::Idents(obj) %>% factor(levels = Seurat::Idents(obj) %>% unique() %>% as.character() %>% sort()) %>% as.numeric() - 1
 
@@ -282,7 +282,7 @@ census_train = function(obj,
 
   if(is.null(hierarchy_mat)){
     if(verbose == T){cat('Finding cell-type hierarchy\n')}
-    hierarchy_mat = cell_hierarchy(obj@assays$RNA@counts, celltypes)
+    hierarchy_mat = cell_hierarchy(obj@assays$RNA$counts, celltypes)
   }
 
   cell_node_match = match(celltypes, colnames(hierarchy_mat))
@@ -515,7 +515,7 @@ predict_node = function(obj, model, node, get_prob = T, allowed_nodes = NULL){
     g = intersect(model$markers[[node]]$gene, rownames(obj))
     temp_seurat = obj[g, Idents(obj) == node]
 
-    x2 = temp_seurat@assays$RNA@counts %>% as.matrix()
+    x2 = temp_seurat@assays$RNA$counts %>% as.matrix()
 
     # add missing genes
     g = setdiff(model$markers[[node]]$gene, rownames(obj))
